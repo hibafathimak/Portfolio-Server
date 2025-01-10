@@ -1,23 +1,23 @@
-require('dotenv').config()
-const express = require('express')
-const cors = require('cors')
-require('./Config/dbConnection')
-const router = require('./Routes/routes')
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+require('./Config/dbConnection'); 
+const router = require('./Routes/routes');
 
-const ServerApp = express()
+const ServerApp = express();
 
-const PORT =3000 || process.env.PORT
+// Use process.env.PORT or default to 3000
+const PORT = process.env.PORT || 3000;
 
-ServerApp.use(cors())
-ServerApp.use(express.json())
-ServerApp.use(router)
-ServerApp.use('/uploads',express.static('./uploads'))
+ServerApp.use(cors());
+ServerApp.use(express.json());
+ServerApp.use(router);  
+ServerApp.use('/uploads', express.static('./uploads'));
 
+ServerApp.get('/', (req, res) => {
+    res.send(`<h1>Portfolio Server Started Running</h1>`);
+});
 
-ServerApp.listen(PORT,()=>{
-    console.log("Server Started Running");
-})
-
-ServerApp.get('/',(req,res)=>{
-    res.send(`<h1>Portfolio Server Started Running</h1>`)
-})
+ServerApp.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
