@@ -1,4 +1,6 @@
 const Project = require('../Models/projects');
+const { v2: cloudinary } = require('cloudinary');
+
 
 exports.addProjectController = async (req, res) => {
   console.log("Inside addProjectController");
