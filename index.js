@@ -5,8 +5,6 @@ require('./Config/dbConnection');
 const router = require('./Routes/routes');
 
 const ServerApp = express();
-
-// Use process.env.PORT or default to 3000
 const PORT = process.env.PORT || 3000;
 
 ServerApp.use(cors());
