@@ -10,7 +10,6 @@ const PORT = process.env.PORT || 3000;
 ServerApp.use(cors());
 ServerApp.use(express.json());
 ServerApp.use(router);  
-ServerApp.use('/uploads', express.static('./uploads'));
 
 ServerApp.get('/', (req, res) => {
     res.send(`<h1>Portfolio Server Started Running</h1>`);

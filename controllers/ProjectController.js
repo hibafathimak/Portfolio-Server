@@ -8,7 +8,7 @@ exports.addProjectController = async (req, res) => {
     return res.status(400).json("Image is required. Please upload an image.");
   }
 
-  const image = req.file.filename; 
+const image = req.file.path;
   console.log("Request body:", { name, description, technologies, category, sourceCode, liveDemoLink });
   console.log("Uploaded file:", req.file.filename);
 
@@ -53,7 +53,7 @@ exports.editProjectController = async (req, res) => {
   const id = req.params.id;
   const { name, description, technologies, category, sourceCode, liveDemoLink, image } = req.body;
   
-  const reUploadImage = req.file ? req.file.filename : image;
+const reUploadImage = req.file ? req.file.path : image;
 
   try {
     const updatedProject = await Project.findByIdAndUpdate(
