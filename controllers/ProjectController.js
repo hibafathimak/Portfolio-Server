@@ -3,39 +3,41 @@ const Project = require('../Models/projects');
 exports.addProjectController = async (req, res) => {
   console.log("Inside addProjectController");
   const { name, description, technologies, category, sourceCode, liveDemoLink } = req.body;
-  
+
   if (!req.file) {
     return res.status(400).json("Image is required. Please upload an image.");
   }
 
-const image = req.file.path;
-  console.log("Request body:", { name, description, technologies, category, sourceCode, liveDemoLink });
-  console.log("Uploaded file:", req.file.filename);
-
   try {
+    let imageUrl = "";
+    if (req.file?.path) {
+      const result = await cloudinary.uploader.upload(req.file.path, { resource_type: "auto" });
+      imageUrl = result.secure_url;
+    }
+
     const existingProject = await Project.findOne({ sourceCode });
     if (existingProject) {
-      res
-        .status(406)
-        .json("Project already exists in our collection. Please upload another.");
-    } else {
-      const newProject = new Project({
-        name,
-        description,
-        technologies,
-        category,
-        image,
-        sourceCode,
-        liveDemoLink,
-      });
-      await newProject.save();
-      res.status(200).json(newProject);
+      return res.status(406).json("Project already exists in our collection. Please upload another.");
     }
+
+    const newProject = new Project({
+      name,
+      description,
+      technologies,
+      category,
+      image: imageUrl,
+      sourceCode,
+      liveDemoLink,
+    });
+
+    await newProject.save();
+    res.status(200).json(newProject);
   } catch (error) {
     console.error("Error adding project:", error);
     res.status(401).json(error);
   }
 };
+
 
 exports.allProjectsController = async (req, res) => {
   console.log("Inside allProjectsController");
@@ -52,10 +54,14 @@ exports.editProjectController = async (req, res) => {
   console.log("Inside editProjectController");
   const id = req.params.id;
   const { name, description, technologies, category, sourceCode, liveDemoLink, image } = req.body;
-  
-const reUploadImage = req.file ? req.file.path : image;
 
   try {
+    let newImage = image;
+    if (req.file?.path) {
+      const result = await cloudinary.uploader.upload(req.file.path, { resource_type: "auto" });
+      newImage = result.secure_url;
+    }
+
     const updatedProject = await Project.findByIdAndUpdate(
       { _id: id },
       {
@@ -63,22 +69,24 @@ const reUploadImage = req.file ? req.file.path : image;
         description,
         technologies,
         category,
-        image: reUploadImage,
+        image: newImage,
         sourceCode,
         liveDemoLink,
       },
       { new: true }
     );
-    
+
     if (!updatedProject) {
       return res.status(404).json("Project not found");
     }
+
     res.status(200).json(updatedProject);
   } catch (error) {
     console.error("Error updating project:", error);
     res.status(401).json(error);
   }
 };
+
 
 exports.removeProjectController = async (req, res) => {
   console.log("Inside removeProjectController");
